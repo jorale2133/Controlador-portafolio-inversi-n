@@ -13,12 +13,13 @@ def ramp_response(t, R, alpha, y_inicial):
 def ramp_step_response(t, R, alpha, base, y_inicial):
     return (y_inicial + base/R + alpha/R**2)*math.exp(R*t) - (base/R + alpha/R**2) -  (alpha/R)*t  
 
-def model_points(tiempo, R, alpha, y_inicial):
+def generate_model_points(func, tiempo, *args):
     solutions = []
     t_eval = np.linspace(0, tiempo, 30)
-    
+
     for i in t_eval:
-        solutions.append(step_response(i, R, alpha=alpha, y_inicial=y_inicial))
+        solutions.append( func(i, *args ))
+
     return t_eval, solutions
 
 ##Modelo de la ecuación diferencial
@@ -26,17 +27,18 @@ def model_system(t, y, R,  u_func):
     return R*y + u_func(t)
 
 ## Entradas U(t)
-def exp_function(t, alpha, inflation):
-    return alpha * np.exp(inflation*t)
 
 def step_function(t, alpha):
     return alpha
 
-def ramp_function(t, alpha, escalon_base):
-    return alpha*t + escalon_base 
+def ramp_function(t, alpha, step_base):
+    return alpha*t + step_base
+
+def exp_function(t, alpha, inflation):
+    return alpha * np.exp(inflation*t)
 
 ##Solve diferential equation.
-def simulate_model(tiempo=30, delta_t = 30, Rendimiento=0.1, y_inicial=0, alpha=100, select_input=0, inflation=0.04):
+def simulate_model(tiempo=30, delta_t = 30, Rendimiento=0.1, y_inicial=0, alpha=100, select_input=0, inflation=0.04, step_base=0):
 
     y0= [y_inicial]
     t_span = (0,tiempo) ##Tiempo en años
@@ -47,7 +49,7 @@ def simulate_model(tiempo=30, delta_t = 30, Rendimiento=0.1, y_inicial=0, alpha=
     elif select_input == 1:
         input_system = lambda t: step_function(t, alpha)
     elif select_input == 2:
-        input_system = lambda t: ramp_function(t, alpha)
+        input_system = lambda t: ramp_function(t, alpha, step_base)
     elif select_input == 3:
         input_system = lambda t: exp_function(t,alpha, inflation)
 
@@ -64,7 +66,7 @@ if __name__ == "__main__":
     alpha = 100
 
 
-    t , s = model_points(tiempo, Rendimiento, alpha=alpha, y_inicial=y_inicial)
+    t , s = generate_model_points(ramp_step_response, tiempo, Rendimiento, alpha, y_inicial, y_inicial)
 
     solutions_zero = simulate_model(tiempo, Rendimiento=Rendimiento, alpha=alpha, y_inicial=10000 , select_input=0)
     
@@ -84,13 +86,14 @@ if __name__ == "__main__":
     ax[0].plot(solutions_ramp.t, solutions_ramp.y[0], 'red')
     ax[0].plot(solutions_exp.t, solutions_exp.y[0], 'blue')
 
-
     ax[0].plot(solutions_zero.t[-1], solutions_zero.y[0][-1], 'd')
     ax[0].text(solutions_zero.t[-1], solutions_zero.y[0][-1], f'{solutions_zero.y[0][-1]}')
 
+    ax[0].plot(t,s, 'black', linestyle = 'dotted' )
+
     ##Graficas de entradas    
     escalon = [ step_function(i, alpha) + y_inicial for i in t ]
-    rampa = [ ramp_function(i, alpha) + y_inicial for i in t ]
+    rampa = [ ramp_function(i, alpha, y_inicial) for i in t ]
     exponencial = [ exp_function(i, alpha, 0.1)-alpha + y_inicial for i in t ]
 
     ax[1].plot( t, rampa, 'red', linestyle = 'dotted')
