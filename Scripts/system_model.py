@@ -3,15 +3,18 @@ from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
 import math 
 
-##Ecuación diferencial resuelta
+##Respueta al escalon
 def step_response(t, R, alpha, y_inicial):
     return  (alpha/R)*(math.exp(R*t) - 1) + y_inicial*math.exp(R*t) 
 ##Respueta a la rampa
 def ramp_response(t, R, alpha, y_inicial):
-    return y_inicial*math.exp(R*t) + (alpha / R**2)*math.exp(R*t) - (alpha/R)*t
-## Ecuación diferencial rampa + escalon base
+    return y_inicial*math.exp(R*t) + (alpha / R**2)*math.exp(R*t) - (alpha/R)*t - (alpha/R**2)
+## Respuesta rampa + escalon base
 def ramp_step_response(t, R, alpha, base, y_inicial):
     return (y_inicial + base/R + alpha/R**2)*math.exp(R*t) - (base/R + alpha/R**2) -  (alpha/R)*t  
+## Respuesta a  la exponencial
+def exp_response(t, R, alpha, I, y_inicial):
+    return y_inicial*math.exp(R*t) + (alpha/(R-I)*math.exp(R*t)) - (alpha/(R-I)*math.exp(I*t))
 
 def generate_model_points(func, tiempo, *args):
     solutions = []
