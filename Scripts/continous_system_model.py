@@ -30,7 +30,6 @@ def model_system(t, y, R,  u_func):
     return R*y + u_func(t)
 
 ## Entradas U(t)
-
 def step_function(t, alpha):
     return alpha
 
@@ -41,7 +40,7 @@ def exp_function(t, alpha, inflation):
     return alpha * np.exp(inflation*t)
 
 ##Solve diferential equation.
-def simulate_model(tiempo=30, delta_t = 30, Rendimiento=0.1, y_inicial=0, alpha=100, select_input=0, inflation=0.04, step_base=0):
+def simulate_model(tiempo = 30, delta_t = 30, Rendimiento = 0.1, y_inicial = 0, alpha = 100, select_input = 0, inflation=0.04, step_base=0):
 
     y0= [y_inicial]
     t_span = (0,tiempo) ##Tiempo en años
@@ -71,8 +70,8 @@ if __name__ == "__main__":
 
     t , s = generate_model_points(ramp_step_response, tiempo, Rendimiento, alpha, y_inicial, y_inicial)
 
+
     solutions_zero = simulate_model(tiempo, Rendimiento=Rendimiento, alpha=alpha, y_inicial=10000 , select_input=0)
-    
     solutions_step = simulate_model(tiempo, Rendimiento=Rendimiento, alpha=alpha, y_inicial=y_inicial, select_input=1)
     solutions_ramp = simulate_model(tiempo, Rendimiento=Rendimiento, alpha=alpha, y_inicial=y_inicial, select_input=2)
     solutions_exp = simulate_model(tiempo, Rendimiento=Rendimiento, alpha= y_inicial, y_inicial=y_inicial, select_input=3)
